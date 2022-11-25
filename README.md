@@ -1,17 +1,9 @@
-# go-ds-badger
+# go-ds-badger3
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
-[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![GoDoc](https://godoc.org/github.com/ipfs/go-ds-badger?status.svg)](https://godoc.org/github.com/ipfs/go-ds-badger)
-[![Build Status](https://travis-ci.org/ipfs/go-ds-badger.svg?branch=master)](https://travis-ci.org/ipfs/go-ds-badger)
+[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)[![Go Reference](https://pkg.go.dev/badge/github.com/dgraph-io/badger/v3.svg)](https://pkg.go.dev/github.com/dgraph-io/badger/v3)https://pkg.go.dev/badge/github.com/dgraph-io/badger/v3.svg
 
-> Datastore implementation using [badger](https://github.com/dgraph-io/badger) as backend.
-
-## Lead Maintainer
-
-[Jakub Sztandera](https://github.com/kubuxu)
+> Datastore implementation using [badger v3](https://github.com/dgraph-io/badger) as backend.
 
 ## Table of Contents
 
@@ -21,11 +13,11 @@
 
 ## Documentation
 
-https://godoc.org/github.com/ipfs/go-ds-badger
+https://pkg.go.dev/github.com/dgraph-io/badger/v3
 
 ## Contribute
 
-Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/go-ds-badger/issues)!
+Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/go-ds-badger3/issues)!
 
 This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
@@ -35,4 +27,4 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 
 ## License
 
-MIT
+MIT + Apache-2.0
