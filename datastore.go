@@ -1,4 +1,4 @@
-package badger
+package badger3
 
 import (
 	"context"

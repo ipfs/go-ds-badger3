@@ -1,4 +1,4 @@
-package badger
+package badger3
 
 import (
 	"bytes"
@@ -42,6 +42,19 @@ func newDS(t *testing.T, opts *Options) (*Datastore, func()) {
 	path, err := os.MkdirTemp(os.TempDir(), "testing_badger_")
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if opts == nil {
+		opts = &DefaultOptions
+		// Limit memory usage for tests, mostly because they fail on 32-bit systems.
+		opts.ValueLogFileSize = 104857600 // 100 MiB
+		opts.MemTableSize = 41943040      // 40 MiB
+		opts.NumMemtables = 1
+	} else {
+		// Limit memory usage for tests, mostly because they fail on 32-bit systems.
+		opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+		opts.MemTableSize = 41943040      // 40 MiB
+		opts.NumMemtables = 1
 	}
 
 	d, err := NewDatastore(path, opts)
@@ -394,6 +407,9 @@ func TestBatchingRequired(t *testing.T) {
 	}
 
 	dsOpts := DefaultOptions
+	dsOpts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	dsOpts.MemTableSize = 41943040      // 40 MiB
+	dsOpts.NumMemtables = 1
 	d, err := NewDatastore(path, &dsOpts)
 	if err != nil {
 		t.Fatal(err)
@@ -662,7 +678,7 @@ func TestGC(t *testing.T) {
 	}
 }
 
-// TestDiskUsage verifies we fetch some badger size correctly.
+// TestDisksage verifies we fetch some badger size correctly.
 // Because the Size metric is only updated every minute in badger and
 // this interval is not configurable, we re-open the database
 // (the size is always calculated on Open) to make things quick.
@@ -673,7 +689,11 @@ func TestDiskUsage(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	d, err := NewDatastore(path, nil)
+	opts := &DefaultOptions
+	opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	opts.MemTableSize = 41943040      // 40 MiB
+	opts.NumMemtables = 1
+	d, err := NewDatastore(path, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -684,7 +704,7 @@ func TestDiskUsage(t *testing.T) {
 	addTestCases(t, d, testcases)
 	d.Close()
 
-	d, err = NewDatastore(path, nil)
+	d, err = NewDatastore(path, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -702,7 +722,11 @@ func TestTxnDiscard(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	d, err := NewDatastore(path, nil)
+	opts := &DefaultOptions
+	opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	opts.MemTableSize = 41943040      // 40 MiB
+	opts.NumMemtables = 1
+	d, err := NewDatastore(path, opts)
 	defer os.RemoveAll(path)
 	if err != nil {
 		t.Fatal(err)
@@ -735,7 +759,11 @@ func TestTxnCommit(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	d, err := NewDatastore(path, nil)
+	opts := &DefaultOptions
+	opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	opts.MemTableSize = 41943040      // 40 MiB
+	opts.NumMemtables = 1
+	d, err := NewDatastore(path, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -770,7 +798,11 @@ func TestTxnBatch(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	d, err := NewDatastore(path, nil)
+	opts := &DefaultOptions
+	opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	opts.MemTableSize = 41943040      // 40 MiB
+	opts.NumMemtables = 1
+	d, err := NewDatastore(path, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -828,7 +860,11 @@ func TestTTL(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	d, err := NewDatastore(path, nil)
+	opts := &DefaultOptions
+	opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	opts.MemTableSize = 41943040      // 40 MiB
+	opts.NumMemtables = 1
+	d, err := NewDatastore(path, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -995,6 +1031,9 @@ func TestOptions(t *testing.T) {
 	opts.GcSleep = 0
 	opts.GcInterval = time.Second
 	opts.TTL = time.Minute
+	opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	opts.MemTableSize = 41943040      // 40 MiB
+	opts.NumMemtables = 1
 	d, err := NewDatastore(path, &opts)
 	if err != nil {
 		t.Fatal(err)
@@ -1036,6 +1075,9 @@ func TestClosedError(t *testing.T) {
 
 	// we manually GC in this test and don't want it to run in the background.
 	opts.GcInterval = 0
+	opts.ValueLogFileSize = 104857600 // 100 MiB as we have problems running tests on 32bit
+	opts.MemTableSize = 41943040      // 40 MiB
+	opts.NumMemtables = 1
 
 	d, err := NewDatastore(path, &opts)
 	if err != nil {
