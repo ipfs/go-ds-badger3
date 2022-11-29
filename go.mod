@@ -1,8 +1,11 @@
 module github.com/ipfs/go-ds-badger3
 
 retract v0.1.0
+
 retract v0.1.1
+
 retract v0.1.2
+
 retract v0.1.3
 
 require (
