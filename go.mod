@@ -1,12 +1,13 @@
 module github.com/ipfs/go-ds-badger3
 
-retract v0.1.0
-
-retract v0.1.1
-
-retract v0.1.2
-
-retract v0.1.3
+retract (
+	v0.1.4 // enable retractions
+	// invalid versions
+	v0.1.3
+	v0.1.2
+	v0.1.1
+	v0.1.0
+)
 
 require (
 	github.com/dgraph-io/badger/v3 v3.2103.4
