@@ -3,9 +3,9 @@ package badger3
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"errors"
 	"fmt"
-	"math/rand"
 	"os"
 	"sort"
 	"testing"
