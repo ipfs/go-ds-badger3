@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var log = logger.Logger("badger")
+var log = logger.Logger("badger4")
 
 var ErrClosed = errors.New("datastore closed")
 
@@ -418,6 +418,11 @@ func (d *Datastore) DiskUsage(ctx context.Context) (uint64, error) {
 		return 0, ErrClosed
 	}
 	lsm, vlog := d.DB.Size()
+
+	// Print disk layout information on debug
+	log.Debugf("\n\nDisk usage stats\nLSM: %d, ValueLog: %d\n", lsm, vlog)
+	log.Debugf("\n%s\n\n", d.DB.LevelsToString())
+
 	return uint64(lsm + vlog), nil
 }
 
