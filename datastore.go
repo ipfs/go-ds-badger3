@@ -13,7 +13,6 @@ import (
 	ds "github.com/ipfs/go-datastore"
 	dsq "github.com/ipfs/go-datastore/query"
 	logger "github.com/ipfs/go-log/v2"
-	goprocess "github.com/jbenet/goprocess"
 	"go.uber.org/zap"
 )
 
@@ -405,7 +404,7 @@ func (d *Datastore) Query(ctx context.Context, q dsq.Query) (dsq.Results, error)
 	txn := d.newImplicitTransaction(true)
 	// We cannot defer txn.Discard() here, as the txn must remain active while the iterator is open.
 	// https://github.com/dgraph-io/badger/commit/b1ad1e93e483bbfef123793ceedc9a7e34b09f79
-	// The closing logic in the query goprocess takes care of discarding the implicit transaction.
+	// The closing logic in the query function takes care of discarding the implicit transaction.
 	return txn.query(q)
 }
 
@@ -775,18 +774,17 @@ func (t *txn) query(q dsq.Query) (dsq.Results, error) {
 	}
 
 	it := t.txn.NewIterator(opt)
-	qrb := dsq.NewResultBuilder(q)
-	qrb.Process.Go(func(worker goprocess.Process) {
+	results := dsq.ResultsWithContext(q, func(ctx context.Context, output chan<- dsq.Result) {
 		t.ds.closeLk.RLock()
 		closedEarly := false
 		defer func() {
 			t.ds.closeLk.RUnlock()
 			if closedEarly {
 				select {
-				case qrb.Output <- dsq.Result{
+				case output <- dsq.Result{
 					Error: ErrClosed,
 				}:
-				case <-qrb.Process.Closing():
+				case <-ctx.Done():
 				}
 			}
 
@@ -848,11 +846,11 @@ func (t *txn) query(q dsq.Query) (dsq.Results, error) {
 
 			if err != nil {
 				select {
-				case qrb.Output <- dsq.Result{Error: err}:
+				case output <- dsq.Result{Error: err}:
 				case <-t.ds.closing: // datastore closing.
 					closedEarly = true
 					return
-				case <-worker.Closing(): // client told us to close early
+				case <-ctx.Done(): // client told us to close early
 					return
 				}
 			}
@@ -891,20 +889,18 @@ func (t *txn) query(q dsq.Query) (dsq.Results, error) {
 			}
 
 			select {
-			case qrb.Output <- result:
+			case output <- result:
 				sent++
 			case <-t.ds.closing: // datastore closing.
 				closedEarly = true
 				return
-			case <-worker.Closing(): // client told us to close early
+			case <-ctx.Done(): // client told us to close early
 				return
 			}
 		}
 	})
 
-	go qrb.Process.CloseAfterChildren() //nolint
-
-	return qrb.Results(), nil
+	return results, nil
 }
 
 func (t *txn) Commit(ctx context.Context) error {
